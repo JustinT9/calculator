@@ -1,0 +1,27 @@
+.equalsContainer, .container {
+    background: grey; 
+    height: 70px; 
+    border-radius: 5px;
+    display: flex; 
+    justify-content: center;
+    align-items: center; 
+    cursor: pointer; 
+}
+
+.container {
+    width: 70px; 
+   
+}
+.equalsContainer {
+    width: 150px; 
+}
+
+.equalsContainer:hover, .container:hover {
+    opacity: 0.75; 
+    transition: 0.75; 
+}
+
+.equalsContainer:active, .container:active {
+    opacity: 0.5; 
+    transition: 0.9; 
+}

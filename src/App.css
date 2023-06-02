@@ -1,0 +1,10 @@
+:root {
+    background: linear-gradient(to left, #475569, #6E7B8B);
+    display: flex; 
+    justify-content: center;
+}
+
+* {
+    font-family: 'Ubuntu', sans-serif;
+}
+
