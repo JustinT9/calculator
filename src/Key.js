@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import './Key.css'; 
 
 function Key( {symbol, op, newOp, view, newView, prev, newPrev, number, newNumber} ) {
-    useEffect(() => {}, [view])
+    useEffect(() => {
+        if (symbol === "=" && prev.num && number.num && op) {
+            newView(number.num); 
+        }
+    }, [view, number])
+
+
 
     const handleClick = (symbol) => {
         if (symbol === "C") {
