@@ -1,9 +1,9 @@
-.calc, .display, .row, .button-row {
+.calc, .display, .row, .buttons {
     display: flex; 
 
 }
 
-.calc, .display, .button-row {
+.calc, .display, .buttons {
     padding: 10px; 
 } 
 
@@ -16,7 +16,7 @@
     padding: 10px; 
 }
 
-.display, .button-row {
+.display, .buttons {
     background: #34463e;
     opacity: 0.75; 
     flex-direction: column;
@@ -34,10 +34,10 @@
     margin-bottom: 10px;  
 }
 
-.button-row, .row {
+.buttons, .row {
     justify-content: space-between;
 }
 
-.button-row {
+.buttons {
     flex: 4; 
 }

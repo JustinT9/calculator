@@ -1,4 +1,4 @@
-.equalsContainer, .container {
+.equalsBox, .box {
     background: grey; 
     height: 70px; 
     border-radius: 5px;
@@ -8,20 +8,20 @@
     cursor: pointer; 
 }
 
-.container {
+.box {
     width: 70px; 
    
 }
-.equalsContainer {
+.equalsBox {
     width: 150px; 
 }
 
-.equalsContainer:hover, .container:hover {
+.equalsBox:hover, .box:hover {
     opacity: 0.75; 
     transition: 0.75; 
 }
 
-.equalsContainer:active, .container:active {
+.equalsBox:active, .box:active {
     opacity: 0.5; 
     transition: 0.9; 
 }

@@ -1,38 +1,39 @@
-import { useEffect, useState } from 'react'; 
+import { useState } from 'react'; 
 import "./Calculator.css";
 import Key from "./Key.js";
 
 function Calculator() {
-    const symbols = [["C", "+-", "%", "/"], ["7", "8", "9", "X"],
+    const keyboard = [["C", "+-", "%", "/"], ["7", "8", "9", "x"],
                 ["4", "5", "6", "-"], ["1", "2", "3", "+"],
                 ["0", ".", "="]]; 
-
-    const [char, setChar] = useState(""); 
-    const [computation, setComputation] = useState(); 
+    
+    const [op, setOp] = useState(); 
+    const [view, setView] = useState(""); 
+    const [number, setNumber] = useState({num: null, sign: false});
 
     return (
         <>
             <div className="calc">
                 <div className="display"> 
-                    {char}
+                    {view}
                 </div>
 
-                <div className="button-row">
-                {   
-                    symbols.map((symbol, index) => {
-                        return (
-                            <div className='row' key={index}>
-                                {   
-                                    symbol.map((sign) => {
-                                            return <Key newChar={setChar} key={sign} symbol={sign} />
-                                        }
-                                    )
-                                }
-                            </div>
-                        )
-                    })
-                }
-            
+                <div className="buttons">
+                    {   
+                        keyboard.map((symbols, index) => {
+                            return (
+                                <div className='row' key={index}>
+                                    {   
+                                        symbols.map((symbol) => {
+                                                return <Key key={symbol} symbol={symbol} view={view} op={op}
+                                                newOp={setOp} newView={setView} number={number} newNumber={setNumber} />
+                                            }
+                                        )
+                                    }
+                                </div>
+                            )
+                        })
+                    }
                 </div>
             </div>
         </>
