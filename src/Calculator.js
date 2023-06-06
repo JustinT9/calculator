@@ -1,4 +1,4 @@
-import { useState } from 'react'; 
+import { useEffect, useState } from 'react'; 
 import "./Calculator.css";
 import Key from "./Key.js";
 
@@ -7,8 +7,9 @@ function Calculator() {
                 ["4", "5", "6", "-"], ["1", "2", "3", "+"],
                 ["0", ".", "="]]; 
     
-    const [op, setOp] = useState(); 
+    const [op, setOp] = useState(null); 
     const [view, setView] = useState(""); 
+    const [prev, setPrev] = useState({num: null, sign: false}); 
     const [number, setNumber] = useState({num: null, sign: false});
 
     return (
@@ -26,7 +27,8 @@ function Calculator() {
                                     {   
                                         symbols.map((symbol) => {
                                                 return <Key key={symbol} symbol={symbol} view={view} op={op}
-                                                newOp={setOp} newView={setView} number={number} newNumber={setNumber} />
+                                                newOp={setOp} newView={setView} prev={prev} newPrev={setPrev} 
+                                                number={number} newNumber={setNumber} />
                                             }
                                         )
                                     }

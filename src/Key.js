@@ -1,13 +1,12 @@
-import { useState } from 'react'; 
+import { useEffect, useState } from 'react'; 
 import './Key.css'; 
 
-function Key( {symbol, input, op, newOp, newView, number, newNumber} ) {
-    const [prev, setPrev] = useState({num: null, sign: false}); 
-
+function Key( {symbol, input, op, newOp, newView, prev, newPrev, number, newNumber} ) {
     const handleClick = (symbol) => {
         if (symbol === "C") {
+            newOp(null); 
             newView(""); 
-            setPrev({num: null, sign: false}); 
+            newPrev({num: null, sign: false}); 
             newNumber({num: null, sign: false}); 
         } else if (symbol === "1" || symbol === "2" || symbol === "3" || 
         symbol === "4" || symbol === "5" || symbol === "6" || symbol === "7" || 
@@ -15,11 +14,6 @@ function Key( {symbol, input, op, newOp, newView, number, newNumber} ) {
             newNumber((oldNumber) => {
                 if (!oldNumber.num) {
                     return ({...oldNumber, num: parseInt(symbol)}) 
-                } else if (prev.num) {
-                    if (op === "+") {
-                    
-                    }
-
                 } else {
                     return ({...oldNumber, num: parseInt(oldNumber.num.toString() + symbol)})
                 }
@@ -37,16 +31,21 @@ function Key( {symbol, input, op, newOp, newView, number, newNumber} ) {
 
         } else {
             if (symbol !== "+-" && symbol !== "." && symbol !== "=") {
-                setPrev({...prev, num: number.num}); 
-                newNumber({num: null, sign: false}); 
-                newView(symbol); 
+                newPrev((oldPrev) => {return ({...oldPrev, num: number.num})})
+                newNumber((oldNumber) => {return ({...oldNumber, num: null})})
                 newOp(symbol);  
-            } 
+            } else {
+                if (symbol === "=" && prev.num && number.num && op) {
+                    if (op === "+") {
+                        newNumber((oldNumber) => {return ({...oldNumber, num: oldNumber.num + prev.num})})
+                    }
+                }                
+            }
         }
-        console.log("Prev:", prev); 
-        console.log("Num:", number); 
     }
 
+    console.log("Prev:", prev); 
+    console.log("Num:", number); 
     if (symbol !== "=") {
         return (
             <div onClick={() => handleClick(symbol)} className='box'>
