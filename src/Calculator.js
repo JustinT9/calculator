@@ -26,9 +26,9 @@ function Calculator() {
                                 <div className='row' key={index}>
                                     {   
                                         symbols.map((symbol) => {
-                                                return <Key key={symbol} symbol={symbol} view={view} op={op}
-                                                newOp={setOp} newView={setView} prev={prev} newPrev={setPrev} 
-                                                number={number} newNumber={setNumber} />
+                                                return <Key key={symbol} symbol={symbol} op={op}
+                                                newOp={setOp} view={view} newView={setView} prev={prev} 
+                                                newPrev={setPrev} number={number} newNumber={setNumber} />
                                             }
                                         )
                                     }

@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react'; 
 import './Key.css'; 
 
-function Key( {symbol, input, op, newOp, newView, prev, newPrev, number, newNumber} ) {
+function Key( {symbol, op, newOp, view, newView, prev, newPrev, number, newNumber} ) {
+    useEffect(() => {
+        if (symbol === "=" && prev.num && number.num && op) {
+            newView(number.num); 
+        }
+    }, [view, number])
+
+
+
     const handleClick = (symbol) => {
         if (symbol === "C") {
             newOp(null); 
@@ -34,22 +42,32 @@ function Key( {symbol, input, op, newOp, newView, prev, newPrev, number, newNumb
                 newPrev((oldPrev) => {return ({...oldPrev, num: number.num})})
                 newNumber((oldNumber) => {return ({...oldNumber, num: null})})
                 newOp(symbol);  
+                newView(symbol); 
             } else {
                 if (symbol === "=" && prev.num && number.num && op) {
                     if (op === "+") {
                         newNumber((oldNumber) => {return ({...oldNumber, num: oldNumber.num + prev.num})})
+                    } else if (op === "-") {
+                        newNumber((oldNumber) => {return ({...oldNumber, num: prev.num - oldNumber.num})})
+                    } else if (op === "x") {
+                        newNumber((oldNumber) => {return ({...oldNumber, num: oldNumber.num * prev.num})})
+                    } else if (op === "/" ) {
+                        newNumber((oldNumber) => {return ({...oldNumber, num: prev.num / oldNumber.num})})
+                    } else if (op === "%") {
+                        newNumber((oldNumber) => {return ({...oldNumber, num: prev.num % oldNumber.num})})
                     }
-                }                
+                }    
             }
         }
     }
-
     console.log("Prev:", prev); 
     console.log("Num:", number); 
+    console.log("View:", view); 
     if (symbol !== "=") {
+        
         return (
             <div onClick={() => handleClick(symbol)} className='box'>
-                {symbol}
+                {symbol} 
             </div>
         )
     } else {
