@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './Key.css'; 
 
 // takes in useState variables along with the specific symbol involved 
-function Key( {symbol, op, newOp, view, newView, expression, newExpression} ) {
+function Key( {symbol, op, newOp, view, newView, expression, newExpression } ) {
 
     const handleClick = (symbol) => {
 
@@ -22,20 +22,22 @@ function Key( {symbol, op, newOp, view, newView, expression, newExpression} ) {
                 oldExpression.push(symbol); 
                 return oldExpression; 
             })
-        
         // if an operation is inputted 
         } else {
             if (symbol !== "+-" && symbol !== "." && symbol !== "=" && 
             expression.length > 0 && Number.isInteger(parseInt(expression.at(expression.length-1)))) {
+                if (expression.length > 2) {        
+                    view = eval(expression.join("")); 
+                }
+
                 newExpression((oldExpression) => {                
                     oldExpression.push(symbol); 
                     return oldExpression; 
                 })
-            }
+            } 
         }
-        console.log(expression); 
-        console.log(eval(String(expression))); 
 
+        console.log(expression); 
 
     }
 
@@ -55,4 +57,4 @@ function Key( {symbol, op, newOp, view, newView, expression, newExpression} ) {
     }    
 }
 
-export default Key
+export default Key;
