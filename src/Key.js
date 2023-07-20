@@ -6,9 +6,7 @@ function Key( {symbol, op, newOp, view, newView, prev, newPrev, number, newNumbe
         if (symbol === "=" && prev.num && number.num && op) {
             newView(number.num); 
         }
-    }, [view, number])
-
-
+    }, [number])
 
     const handleClick = (symbol) => {
         if (symbol === "C") {
