@@ -1,68 +1,46 @@
 import { useEffect, useState } from 'react'; 
 import './Key.css'; 
 
-function Key( {symbol, op, newOp, view, newView, prev, newPrev, number, newNumber} ) {
-    useEffect(() => {
-        if (symbol === "=" && prev.num && number.num && op) {
-            newView(number.num); 
-        }
-    }, [number])
+// takes in useState variables along with the specific symbol involved 
+function Key( {symbol, op, newOp, view, newView, expression, newExpression} ) {
 
     const handleClick = (symbol) => {
+
+        // if clear then reset everything 
         if (symbol === "C") {
-            newOp(null); 
-            newView(""); 
-            newPrev({num: null, sign: false}); 
-            newNumber({num: null, sign: false}); 
-        } else if (symbol === "1" || symbol === "2" || symbol === "3" || 
+            newExpression((oldExpression) => {
+                oldExpression.splice(0, oldExpression.length);
+                return oldExpression; 
+            }) 
+        } 
+
+        // otherwise if a number is inputted 
+       else if (symbol === "1" || symbol === "2" || symbol === "3" || 
         symbol === "4" || symbol === "5" || symbol === "6" || symbol === "7" || 
         symbol === "8" || symbol === "9") {
-            newNumber((oldNumber) => {
-                if (!oldNumber.num) {
-                    return ({...oldNumber, num: parseInt(symbol)}) 
-                } else {
-                    return ({...oldNumber, num: parseInt(oldNumber.num.toString() + symbol)})
-                }
-            });   
-                        
-            newView((oldView) => {
-                if (oldView === "+=" || oldView === "%" || oldView === "/" || 
-                oldView === "-" || oldView === "+" || oldView === "." || oldView === "=" ||
-                oldView === "x") {
-                    return "" + symbol;
-                } else {
-                    return oldView + symbol; 
-                }
-            });
-
+            newExpression((oldExpression) => {                
+                oldExpression.push(symbol); 
+                return oldExpression; 
+            })
+        
+        // if an operation is inputted 
         } else {
-            if (symbol !== "+-" && symbol !== "." && symbol !== "=") {
-                newPrev((oldPrev) => {return ({...oldPrev, num: number.num})})
-                newNumber((oldNumber) => {return ({...oldNumber, num: null})})
-                newOp(symbol);  
-                newView(symbol); 
-            } else {
-                if (symbol === "=" && prev.num && number.num && op) {
-                    if (op === "+") {
-                        newNumber((oldNumber) => {return ({...oldNumber, num: oldNumber.num + prev.num})})
-                    } else if (op === "-") {
-                        newNumber((oldNumber) => {return ({...oldNumber, num: prev.num - oldNumber.num})})
-                    } else if (op === "x") {
-                        newNumber((oldNumber) => {return ({...oldNumber, num: oldNumber.num * prev.num})})
-                    } else if (op === "/" ) {
-                        newNumber((oldNumber) => {return ({...oldNumber, num: prev.num / oldNumber.num})})
-                    } else if (op === "%") {
-                        newNumber((oldNumber) => {return ({...oldNumber, num: prev.num % oldNumber.num})})
-                    }
-                }    
+            if (symbol !== "+-" && symbol !== "." && symbol !== "=" && 
+            expression.length > 0 && Number.isInteger(parseInt(expression.at(expression.length-1)))) {
+                newExpression((oldExpression) => {                
+                    oldExpression.push(symbol); 
+                    return oldExpression; 
+                })
             }
         }
+        console.log(expression); 
+        console.log(eval(String(expression))); 
+
+
     }
-    console.log("Prev:", prev); 
-    console.log("Num:", number); 
-    console.log("View:", view); 
+
+    // cases for when printing out the equal sign  
     if (symbol !== "=") {
-        
         return (
             <div onClick={() => handleClick(symbol)} className='box'>
                 {symbol} 
