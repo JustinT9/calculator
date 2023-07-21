@@ -69,8 +69,14 @@ function Calculator() {
                     setNum("");
                 // to change the sign or operation 
                 } else if (expression.length > 0) {
-                    setExpression((oldExpression) => { return [...oldExpression.slice(0, expression.length-1), symbol] } ); 
-                    setSaved( {num: expression[0], op: symbol } )
+                    if (symbol === "-" && expression[expression.length-1] === "-" || 
+                    symbol === "-" && parseInt(expression[0]) < 0) {
+                        setExpression((oldExpression) => { return [...oldExpression.slice(0, expression.length-1), "+"] } );
+                        setSaved( {num: -1*expression[0], op: "+"} )
+                    } else {
+                        setExpression((oldExpression) => { return [...oldExpression.slice(0, expression.length-1), symbol] } ); 
+                        setSaved( {num: expression[0], op: symbol } )
+                    }
                 }
             // otherwise if its not a *, +, %, /, - operation 
             } else {
