@@ -16,24 +16,21 @@ function Calculator() {
 
     // to update the view 
     useEffect(() => {
+        // display the number whenever its inputted
         if (num !== "") {
             setView(num); 
         } else if (expression.length > 2) {
+            // display calculations with operations other than =, +-, and . 
             if (op !== "=") {
                 setView(eval(expression.slice(0, expression.length-1).join("")))
                 setExpression((oldExpression) => { 
                     return [eval(oldExpression.slice(0, oldExpression.length-1).join("")), oldExpression[oldExpression.length-1]]
                 })
+            // otherwise if equals is used 
             } else {
                 if (op === "=") {
-                    if (!Number.isInteger(expression[expression.length-1])) {
-                        setView(eval(expression.join("")));
-                        setExpression((oldExpression) => { return [eval(oldExpression.join("")), saved.op]});
-                    } else {
-                        setView(eval(expression.join(""))); 
-                        setExpression([]);
-                        setNum(eval(expression.join("")));
-                    }
+                    setView(eval(expression.join("")));
+                    setExpression((oldExpression) => { return [eval(oldExpression.join("")), saved.op]});
                 }
             }
         }
@@ -51,6 +48,8 @@ function Calculator() {
             setExpression([]);
             setView("0"); 
             setNum(""); 
+            setOp("");
+            setSaved({num: null, op: null});
         } 
 
         // otherwise if a number is inputted 
@@ -62,17 +61,24 @@ function Calculator() {
         // if an operation is inputted 
         } else {
             if (symbol !== "+-" && symbol !== "." && symbol !== "=") {
+                // if there is a number and a operation then form an expression and reset the number 
+                // for the next input 
                 if (num !== "") {
                     setExpression((oldExpression) => { return [...oldExpression, num, symbol] } ); 
                     setSaved({num: num, op: symbol});
-                    setNum(""); 
+                    setNum("");
+                // to change the sign or operation 
                 } else if (expression.length > 0) {
                     setExpression((oldExpression) => { return [...oldExpression.slice(0, expression.length-1), symbol] } ); 
+                    setSaved( {num: expression[0], op: symbol } )
                 }
+            // otherwise if its not a *, +, %, /, - operation 
             } else {
                 if (symbol === "=" && expression.length > 0) {
+                    // if its an operation such as (56 +) and equals is used 
                     if (!Number.isInteger(expression[expression.length-1]) && num === "") {
                         setExpression((oldExpression) => { return [...oldExpression, saved.num]})
+                    // otherwise if its a normal operation on expression such as 56 + 56 
                     } else {
                         setExpression((oldExpression) => { return [...oldExpression, num]} );
                         setSaved((oldSave) => { return {...oldSave, num: num}}); 
