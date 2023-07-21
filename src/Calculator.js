@@ -5,16 +5,16 @@ function Calculator() {
     
     // what is displayed 
     const [view, setView] = useState("0"); 
-    
     // expression for the calculation
     const [expression, setExpression] = useState([]); 
-
     // a number to input into the expression 
     const [num, setNum] = useState(""); 
-
     // current operation 
     const [op, setOp] = useState();  
+    // the number used to add if equals operation is spammed 
+    const [saved, setSaved] = useState({num: null, op: null}); 
 
+    // to update the view 
     useEffect(() => {
         if (num !== "") {
             setView(num); 
@@ -26,9 +26,14 @@ function Calculator() {
                 })
             } else {
                 if (op === "=") {
-                    setView(eval(expression.join(""))); 
-                    setExpression([]);
-                    setNum(eval(expression.join("")));
+                    if (!Number.isInteger(expression[expression.length-1])) {
+                        setView(eval(expression.join("")));
+                        setExpression((oldExpression) => { return [eval(oldExpression.join("")), saved.op]});
+                    } else {
+                        setView(eval(expression.join(""))); 
+                        setExpression([]);
+                        setNum(eval(expression.join("")));
+                    }
                 }
             }
         }
@@ -36,6 +41,7 @@ function Calculator() {
         console.log(expression);
         console.log(num); 
         console.log(op); 
+        console.log(saved.num);
 
     }, [num, expression])
 
@@ -58,14 +64,24 @@ function Calculator() {
             if (symbol !== "+-" && symbol !== "." && symbol !== "=") {
                 if (num !== "") {
                     setExpression((oldExpression) => { return [...oldExpression, num, symbol] } ); 
+                    setSaved({num: num, op: symbol});
                     setNum(""); 
                 } else if (expression.length > 0) {
                     setExpression((oldExpression) => { return [...oldExpression.slice(0, expression.length-1), symbol] } ); 
                 }
             } else {
                 if (symbol === "=" && expression.length > 0) {
-                    setExpression((oldExpression) => { return [...oldExpression, num]} ); 
-                    setNum(""); 
+                    if (!Number.isInteger(expression[expression.length-1]) && num === "") {
+                        setExpression((oldExpression) => { return [...oldExpression, saved.num]})
+                    } else {
+                        setExpression((oldExpression) => { return [...oldExpression, num]} );
+                        setSaved((oldSave) => { return {...oldSave, num: num}}); 
+                        setNum(""); 
+                    }
+                } else if (symbol === "+-") {
+                    setNum((parseInt(num)*-1).toString());
+                } else if (symbol === ".") {
+                    setNum((oldNum) => { return oldNum + "."} )
                 }
             }
             setOp(symbol);  
