@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import "./Calculator.css";
 
 function Calculator() {
-    
     // what is displayed 
     const [view, setView] = useState("0"); 
     // expression for the calculation
@@ -11,21 +10,29 @@ function Calculator() {
     const [num, setNum] = useState(""); 
     // current operation 
     const [op, setOp] = useState();  
-    // the number used to add if equals operation is spammed 
+    // the number saved to add if equals operation is spammed 
+    // along with the operation 
     const [saved, setSaved] = useState({num: null, op: null}); 
 
-    // to update the view 
+    // to update the view whenever the number or expression is updated 
     useEffect(() => {
-        // display the number whenever its inputted
+        // display the number whenever its inputted for a responsive UI 
         if (num !== "") {
             setView(num); 
+        
+        // otherwise if a number is calculated then display that answer...  
         } else if (expression.length > 2) {
             // display calculations with operations other than =, +-, and . 
+            // and this if the normal operations are clicked to compute the answer 
             if (op !== "=") {
+                // since two elements are added to an expression then you must get an expression 
+                // 4 + 4 + --> 4 + 4 to evaluate it validly 
                 setView(eval(expression.slice(0, expression.length-1).join("")))
+                // for future operations you must update the expression from 4 + 4 --> 8 + 
                 setExpression((oldExpression) => { 
-                    return [eval(oldExpression.slice(0, oldExpression.length-1).join("")), oldExpression[oldExpression.length-1]]
+                    return [eval(oldExpression.slice(0, oldExpression.length-1).join("")), saved.op]
                 })
+
             // otherwise if equals is used 
             } else {
                 if (op === "=") {
@@ -35,18 +42,20 @@ function Calculator() {
             }
         }
 
-        console.log(expression);
-        console.log(num); 
-        console.log(op); 
-        console.log(saved.num);
+        console.log("EXPRESSION:", expression);
+        console.log("NUMBER:", num); 
+        console.log("OPERATION:", op); 
+        console.log("SAVED:", saved);
+        console.log("========================")
 
     }, [num, expression])
 
+    // whenever a button is clicked 
     const handleClick = (symbol) => {
         // if clear then reset everything 
         if (symbol === "C") {
-            setExpression([]);
             setView("0"); 
+            setExpression([]);
             setNum(""); 
             setOp("");
             setSaved({num: null, op: null});
@@ -57,45 +66,59 @@ function Calculator() {
         symbol === "4" || symbol === "5" || symbol === "6" || symbol === "7" || 
         symbol === "8" || symbol === "9") {
             setNum((oldNum) => { return oldNum + symbol })
+        }
 
         // if an operation is inputted 
-        } else {
+        else {
+            // normal operations such as +, -, *, -, %
             if (symbol !== "+-" && symbol !== "." && symbol !== "=") {
-                // if there is a number and a operation then form an expression and reset the number 
-                // for the next input 
+                // if there is a number inputted then the expression can be updated 
                 if (num !== "") {
                     setExpression((oldExpression) => { return [...oldExpression, num, symbol] } ); 
+                    // saved if the = operation is used for an incomplete expression 
+                    // e.g. 5 + ... --> 5 + 5 --> 10 + ... --> 10 + 5 ... 
                     setSaved({num: num, op: symbol});
+                    // must be reset so another new number can be concatenated 
                     setNum("");
-                // to change the sign or operation 
+
+                // if the user decides to change the operation within the expression to +, -, *, /, or % 
                 } else if (expression.length > 0) {
-                    if (symbol === "-" && expression[expression.length-1] === "-" || 
-                    symbol === "-" && parseInt(expression[0]) < 0) {
+                    // if the user inputs negative symbol and the current operation is already - the negate **fix** 
+                    // this case is only for equals if the number is already negative and the symbol inputted is negative 
+                    if (symbol === "-" && expression[expression.length-1] === "-") {
                         setExpression((oldExpression) => { return [...oldExpression.slice(0, expression.length-1), "+"] } );
                         setSaved( {num: -1*expression[0], op: "+"} )
+                    
+                    // otherwise if there is no negative sign to negate then just replace the operation normally 
                     } else {
                         setExpression((oldExpression) => { return [...oldExpression.slice(0, expression.length-1), symbol] } ); 
                         setSaved( {num: expression[0], op: symbol } )
                     }
                 }
-            // otherwise if its not a *, +, %, /, - operation 
+
+            // operations such as +-, =, and . that have miscellaneous operations 
             } else {
+                // if there is an expression to evaluate with the equals operation 
                 if (symbol === "=" && expression.length > 0) {
                     // if its an operation such as (56 +) and equals is used 
                     if (!Number.isInteger(expression[expression.length-1]) && num === "") {
                         setExpression((oldExpression) => { return [...oldExpression, saved.num]})
+
                     // otherwise if its a normal operation on expression such as 56 + 56 
                     } else {
                         setExpression((oldExpression) => { return [...oldExpression, num]} );
                         setSaved((oldSave) => { return {...oldSave, num: num}}); 
                         setNum(""); 
                     }
+                
                 } else if (symbol === "+-") {
                     setNum((parseInt(num)*-1).toString());
+
                 } else if (symbol === ".") {
                     setNum((oldNum) => { return oldNum + "."} )
                 }
             }
+            // need to get the operation to render the view 
             setOp(symbol);  
         }
     }
