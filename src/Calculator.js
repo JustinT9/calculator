@@ -45,7 +45,7 @@ function Calculator() {
                     setExpression((oldExpression) => { return [eval(oldExpression.join("")), saved.op]});
                 } 
             }
-        // initially... 
+        // to negate a result that is computed 
         } else if (op === "+-") {
             setView(expression[0]); 
         }
@@ -90,8 +90,13 @@ function Calculator() {
                     setExpression((oldExpression) => { 
                         // negate negatives if possible 
                         if (oldExpression[oldExpression.length-1] === "-" && parseFloat(num) < 0) {
-                            setSaved({num: -1*parseInt(num), op: symbol});
-                            return [oldExpression[0], "+", -1*parseInt(num), symbol];
+                            if (parseFloat(num) % 1 === 0) {
+                                setSaved({num: -1*parseInt(num), op: symbol});
+                                return [oldExpression[0], "+", -1*parseInt(num), symbol];
+                            } else {
+                                setSaved({num: -1*parseFloat(num), op: symbol});
+                                return [oldExpression[0], "+", -1*parseFloat(num), symbol];
+                            }
                         // otherwise normally concate the expression 
                         } else {
                             // saved if the = operation is used for an incomplete expression 
@@ -113,7 +118,7 @@ function Calculator() {
                         setSaved( {num: -1*expression[0], op: "+"} )
                     
                     // otherwise if there is no negative sign to negate then just replace the operation normally 
-                    } else {
+                    } else  {
                         setExpression((oldExpression) => { return [...oldExpression.slice(0, expression.length-1), symbol] } ); 
                         // in case the equals operation is used 
                         setSaved( {num: expression[0], op: symbol } )
@@ -127,29 +132,47 @@ function Calculator() {
                     // if its an operation such as (56 +) and equals is used and is spammed where 
                     // there is no number inputted then operate with the same number 
                     if (!Number.isInteger(expression[expression.length-1]) && num === "") {
-                        setExpression((oldExpression) => { return [...oldExpression, saved.num]})
-
-                    // otherwise if its a normal operation on expression such as 56 + 56 
-                    } else {
-                        setExpression((oldExpression) => {
-                            // negate  
-                            if (oldExpression[oldExpression.length-1] === "-" && parseFloat(num) < 0) {
-                                setSaved({num: -1*parseInt(num), op: "+"}); 
-                                return [oldExpression[0], "+", -1*parseInt(num)]; 
+                        setExpression((oldExpression) => { 
+                            // handle negatives if its a thing 
+                            if ((oldExpression[oldExpression.length-1] === "-" && parseFloat(oldExpression[0]) < 0) || 
+                            (oldExpression[oldExpression.length-1] === "-" && parseFloat(saved.num) < 0)) {
+                                return [oldExpression[0], '+', -1*saved.num]
                             } else {
+                                return [...oldExpression, saved.num]
+                            }
+                        })
+                    } // otherwise if its a normal operation on expression such as 56 + 56 
+                    else {
+                        setExpression((oldExpression) => {
+                            // negate if its used within an equals expression 
+                            if (oldExpression[oldExpression.length-1] === "-" && parseFloat(num) < 0) {
+                                if (parseFloat(num) % 1 === 0) {
+                                    setSaved({num: -1*parseInt(num), op: "+"}); 
+                                    return [oldExpression[0], "+", -1*parseInt(num)]; 
+                                } else {
+                                    setSaved({num: -1.00*parseFloat(num), op: "+"}); 
+                                    return [oldExpression[0], "+", -1.00*parseFloat(num)]; 
+                                }
+                                
+                            } else {
+                                // must save the number that was added 
                                 setSaved((oldSave) => { return {...oldSave, num: num}}); 
                                 return [...oldExpression, num];  
                             }
                         }); 
-                        // must save the number that was added 
                         setNum(""); 
                     }
                 
                 // when it comes to negate, must account for two cases, negating a number that was 
-                // inputted and negating a result and updating the operations as a result 
+                // inputted and negating a result and updating the operations as a result and also 
+                // accounting for floats 
                 } else if (symbol === "+-") {   
                     // if number inputted 
                     if (num !== "") {
+                        if (op === "-" && expression[expression.length-1] === "+") {
+                            setExpression((oldExpression) => { return [oldExpression[0], "-"]})
+                        }
+
                         // must consider if its a float or not to preserve value 
                         if (parseFloat(num) % 1 == 0) { 
                             setNum((parseInt(num)*-1).toString());
@@ -157,7 +180,6 @@ function Calculator() {
                         } else {
                             setNum((parseFloat(num)*-1.00).toString());
                             setSaved((oldSaved) => { return {...oldSaved, num: (parseFloat(num)*-1.00).toString()}});
-
                         } 
                     
                     // otherwise it must be a result 
@@ -202,13 +224,13 @@ function Calculator() {
                                         symbols.map((symbol) => {
                                                 if (symbol !== "=") {
                                                     return (
-                                                        <div onClick={() => handleClick(symbol)} className="box">
+                                                        <div key={symbol} onClick={() => handleClick(symbol)} className="box">
                                                             {symbol}
                                                         </div>
                                                     )
                                                 } else {
                                                     return (
-                                                        <div onClick={() => handleClick(symbol)} className="equalsBox">
+                                                        <div key={symbol} onClick={() => handleClick(symbol)} className="equalsBox">
                                                             {symbol}
                                                         </div>
                                                     )
