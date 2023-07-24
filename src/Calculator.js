@@ -34,7 +34,6 @@ function Calculator() {
             }
         } else if (op === "+-") {
             setView(expression[0]); 
-            setSaved((oldSave) => { return {...oldSave, num: expression[0]*-1}}); 
         }
 
         console.log(expression);
@@ -110,6 +109,7 @@ function Calculator() {
                         } else {
                             setExpression([expression[0]*-1.00, expression[expression.length-1]])
                         }
+                        setSaved((oldSave) => { return {...oldSave, num: expression[0]*-1}}); 
                     }
                 } else if (symbol === ".") {
                     setNum((oldNum) => { return oldNum + "."} )
