@@ -37,7 +37,7 @@ function Calculator() {
                 setExpression((oldExpression) => { 
                     return [eval(oldExpression.slice(0, oldExpression.length-1).join("")), saved.op]
                 })
-                // display calculations with operation +-, =, . 
+            // display calculations with operation +-, =, . 
             } else {
                 // evaluate with = 
                 if (op === "=") {
@@ -88,7 +88,7 @@ function Calculator() {
                 // if there is a number inputted then the expression can be updated 
                 if (num !== "") {
                     setExpression((oldExpression) => { 
-                        // negate negatives if possible 
+                        // negate negatives if possible for both floats and integerse 
                         if (oldExpression[oldExpression.length-1] === "-" && parseFloat(num) < 0) {
                             if (parseFloat(num) % 1 === 0) {
                                 setSaved({num: -1*parseInt(num), op: symbol});
@@ -102,6 +102,7 @@ function Calculator() {
                             // saved if the = operation is used for an incomplete expression 
                             // e.g. 5 + ... --> 5 + 5 --> 10 + ... --> 10 + 5 ... 
                             setSaved({num: num, op: symbol});
+                            // to account for edge case for negatives 
                             if (parseFloat(num) > 0 && oldExpression[oldExpression.length-1] === "+" &&
                             op === "-") {
                                 return [oldExpression[0], "-", num, symbol]; 
@@ -122,7 +123,7 @@ function Calculator() {
                         setSaved( {num: -1*expression[0], op: "+"} )
                     
                     // otherwise if there is no negative sign to negate then just replace the operation normally 
-                    } else  {
+                    } else {
                         setExpression((oldExpression) => { return [...oldExpression.slice(0, expression.length-1), symbol] } ); 
                         // in case the equals operation is used 
                         setSaved( {num: expression[0], op: symbol } )
@@ -148,7 +149,7 @@ function Calculator() {
                     } // otherwise if its a normal operation on expression such as 56 + 56 
                     else {
                         setExpression((oldExpression) => {
-                            // negate if its used within an equals expression 
+                            // negate if its used within an equals expression for both floats and integers 
                             if (oldExpression[oldExpression.length-1] === "-" && parseFloat(num) < 0) {
                                 if (parseFloat(num) % 1 === 0) {
                                     setSaved({num: -1*parseInt(num), op: "+"}); 
@@ -157,8 +158,10 @@ function Calculator() {
                                     setSaved({num: -1.00*parseFloat(num), op: "+"}); 
                                     return [oldExpression[0], "+", -1.00*parseFloat(num)]; 
                                 }
-                                
+                            
+                            // otherwise if there is no negation 
                             } else {
+                                // for case with negatives when you want to subtract again 
                                 if (parseFloat(num) > 0 && oldExpression[oldExpression.length-1] === "+" &&
                                 op === "-") {
                                     // must save the number that was added 
@@ -179,6 +182,7 @@ function Calculator() {
                 } else if (symbol === "+-") {   
                     // if number inputted 
                     if (num !== "") {
+                        // to handle edge with negatives... 
                         if (op === "-" && expression[expression.length-1] === "+") {
                             setExpression((oldExpression) => { return [oldExpression[0], "-"]})
                         }
@@ -192,8 +196,8 @@ function Calculator() {
                             setSaved((oldSaved) => { return {...oldSaved, num: (parseFloat(num)*-1.00).toString()}});
                         } 
                     
-                    // otherwise it must be a result 
-                    } else {
+                    // otherwise it must be a result that was computed 
+                    } else if (expression.length !== 0) {
                         // must consider if its a float or not to preserve value 
                         if (expression[0] % 1 == 0) {
                             setExpression([expression[0]*-1, expression[expression.length-1]])
@@ -203,7 +207,6 @@ function Calculator() {
                             setSaved((oldSaved) => { return {...oldSaved, num: expression[0]*-1.00}})
                         } 
                     }
-
                 } else if (symbol === "." && !num.includes(".")) {
                     if (num !== "") {
                         setNum((oldNum) => { return oldNum + "."})
@@ -213,7 +216,7 @@ function Calculator() {
                     }
                 }
             }
-            // need to get the operation to render the view 
+            // need to get the operation to render the view and to keep track for future operations 
             setOp(symbol);  
         }
     }
@@ -227,10 +230,12 @@ function Calculator() {
 
                 <div className="buttons">
                     {   
+                        // map each row 
                         buttons.map((symbols, index) => {
                             return (
                                 <div className='row' key={index}>
                                     {   
+                                        // map the symbols and its respective divs 
                                         symbols.map((symbol) => {
                                                 if (symbol !== "=") {
                                                     return (
