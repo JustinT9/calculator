@@ -14,6 +14,11 @@ function Calculator() {
     // along with the operation 
     const [saved, setSaved] = useState({num: null, op: null}); 
 
+    // calculator keys 
+    const buttons = [["C", "+-", "%", "/"], ["7", "8", "9", "*"],
+                ["4", "5", "6", "-"], ["1", "2", "3", "+"],
+                ["0", ".", "="]]; 
+
     // to update the view whenever the number or expression is updated 
     useEffect(() => {
         // display the number whenever its inputted for a responsive UI 
@@ -190,77 +195,32 @@ function Calculator() {
                 </div>
 
                 <div className="buttons">
-                    <div className='row'> 
-                        <div onClick={() => handleClick("C")} className='box'>
-                            C
-                        </div>
-                        <div onClick={() => handleClick("+-")} className='box'>
-                            +-
-                        </div>
-                        <div onClick={() => handleClick("%")} className='box'>
-                            %
-                        </div>
-                        <div onClick={() => handleClick("/")} className='box'>
-                            / 
-                        </div>
-                    </div>
-
-                    <div className='row'>
-                        <div onClick={() => handleClick("7")} className='box'>
-                            7 
-                        </div>
-                        <div onClick={() => handleClick("8")} className='box'>
-                            8
-                        </div>
-                        <div onClick={() => handleClick("9")} className='box'>
-                            9 
-                        </div>
-                        <div onClick={() => handleClick("*")} className='box'>
-                            x
-                        </div>
-                    </div>
-
-                    <div className='row'>
-                        <div onClick={() => handleClick("4")} className='box'>
-                            4
-                        </div>
-                        <div onClick={() => handleClick("5")} className='box'>
-                            5 
-                        </div>
-                        <div onClick={() => handleClick("6")} className='box'>
-                            6 
-                        </div>
-                        <div onClick={() => handleClick("-")} className='box'>
-                            -
-                        </div>
-                    </div>
-
-                    <div className='row'>
-                        <div onClick={() => handleClick("1")} className='box'>
-                            1
-                        </div>
-                        <div onClick={() => handleClick("2")} className='box'>
-                            2 
-                        </div>
-                        <div onClick={() => handleClick("3")} className='box'>
-                            3 
-                        </div>
-                        <div onClick={() => handleClick("+")} className='box'>
-                            +
-                        </div>
-                    </div>
-
-                    <div className='row'>
-                        <div onClick={() => handleClick("0")} className='box'>
-                            0
-                        </div>
-                        <div onClick={() => handleClick(".")} className='box'>
-                            .
-                        </div>
-                        <div onClick={() => handleClick("=")} className='equalsBox'>
-                            =
-                        </div>
-                    </div>
+                    {   
+                        buttons.map((symbols, index) => {
+                            return (
+                                <div className='row' key={index}>
+                                    {   
+                                        symbols.map((symbol) => {
+                                                if (symbol !== "=") {
+                                                    return (
+                                                        <div onClick={() => handleClick(symbol)} className="box">
+                                                            {symbol}
+                                                        </div>
+                                                    )
+                                                } else {
+                                                    return (
+                                                        <div onClick={() => handleClick(symbol)} className="equalsBox">
+                                                            {symbol}
+                                                        </div>
+                                                    )
+                                                }
+                                            }
+                                        )
+                                    }
+                                </div>
+                            )
+                        })
+                    }
                 </div>
             </div>
         </>
