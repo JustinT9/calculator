@@ -102,6 +102,10 @@ function Calculator() {
                             // saved if the = operation is used for an incomplete expression 
                             // e.g. 5 + ... --> 5 + 5 --> 10 + ... --> 10 + 5 ... 
                             setSaved({num: num, op: symbol});
+                            if (parseFloat(num) > 0 && oldExpression[oldExpression.length-1] === "+" &&
+                            op === "-") {
+                                return [oldExpression[0], "-", num, symbol]; 
+                            }
                             return [...oldExpression, num, symbol]; 
                         }
                     }); 
@@ -155,7 +159,13 @@ function Calculator() {
                                 }
                                 
                             } else {
-                                // must save the number that was added 
+                                if (parseFloat(num) > 0 && oldExpression[oldExpression.length-1] === "+" &&
+                                op === "-") {
+                                    // must save the number that was added 
+                                    setSaved({num: num, op: "-"}); 
+                                    return [oldExpression[0], "-", num]; 
+                                }
+
                                 setSaved((oldSave) => { return {...oldSave, num: num}}); 
                                 return [...oldExpression, num];  
                             }
